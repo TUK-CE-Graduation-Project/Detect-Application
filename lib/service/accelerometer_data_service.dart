@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -27,21 +28,23 @@ class AccelerometerService {
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
   final PositionStream _positionStream = PositionStream();
   Position? _position = MyLocation().position;
+
   List<Data> _data = [];
-  Data2? _data2;
-  late Stopwatch _stopwatch;
   AccelerometerEvent? _event;
 
-  late Timer _timer;
-  void accelermeter() async {
+  Stopwatch? _stopwatch;
+  Timer? _timer;
+
+  void startRecord() async {
     _data = [];
     _stopwatch = Stopwatch();
-    _stopwatch.start();
+    _stopwatch!.start();
     _position = await MyLocation().getMyCurrentLocation();
 
     _positionStream.controller.stream.listen((event) {
       _position = event;
     });
+
     _streamSubscriptions
         .add(accelerometerEvents.listen((AccelerometerEvent event) {
       _event = event;
@@ -57,21 +60,25 @@ class AccelerometerService {
 
   Future<File> createFile() async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/data');
+    File file = File('${directory.path}/data.txt');
 
     return file;
   }
 
-  Future<List<Data>> save() async {
-    _data2 = Data2(data: _data, time: _stopwatch.elapsed.inSeconds);
+  Future<List<Data>> cancelAndSave() async {
+    int time = _stopwatch!.elapsed.inSeconds;
     cancel();
 
+    String dataString = '$time\n';
+    for (var element in _data) {
+      dataString +=
+          '${element.position}, ${element.accelerometerEvent}, ${element.time}\n';
+    }
     File file = await createFile();
-    file.writeAsString(
-        'gps: ${_position?.latitude}, ${_position?.longitude} data: $_data');
-    print(file.path);
-    // 서버 전송
-    DioClient().post('url', {'data': _data});
+    file.writeAsString(dataString);
+
+    FormData formData = FormData.fromMap({'file': file});
+    DioClient().post('url', formData);
 
     return _data;
   }
@@ -80,7 +87,9 @@ class AccelerometerService {
     for (final subscription in _streamSubscriptions) {
       subscription.cancel();
     }
-    _timer.cancel();
+    _timer?.cancel();
+    _stopwatch?.stop();
+    _stopwatch?.reset();
     _positionStream.dispose();
   }
 }

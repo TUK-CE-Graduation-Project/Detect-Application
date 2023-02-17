@@ -77,12 +77,12 @@ class _TestState extends State<Test> {
                   show: true,
                   getDrawingVerticalLine: (value) {
                     return FlLine(
-                        color: Color.fromARGB(144, 255, 255, 255),
+                        color: const Color.fromARGB(144, 255, 255, 255),
                         strokeWidth: 1);
                   },
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                        color: Color.fromARGB(144, 255, 255, 255),
+                        color: const Color.fromARGB(144, 255, 255, 255),
                         strokeWidth: 1);
                   },
                 ),
@@ -98,13 +98,14 @@ class _TestState extends State<Test> {
                     }).toList(),
                     isCurved: true,
                     barWidth: 5,
-                    color: Color(0xff23b6e6),
+                    color: const Color(0xff23b6e6),
                     isStrokeCapRound: true,
                     dotData: FlDotData(
                       show: true,
                     ),
                     belowBarData: BarAreaData(
-                        show: true, color: Color.fromARGB(122, 27, 206, 113)),
+                        show: true,
+                        color: const Color.fromARGB(122, 27, 206, 113)),
                   ),
                   LineChartBarData(
                     spots: _data.map((e) {
@@ -113,13 +114,14 @@ class _TestState extends State<Test> {
                     }).toList(),
                     isCurved: true,
                     barWidth: 5,
-                    color: Color.fromARGB(187, 22, 194, 65),
+                    color: const Color.fromARGB(187, 22, 194, 65),
                     isStrokeCapRound: true,
                     dotData: FlDotData(
                       show: true,
                     ),
                     belowBarData: BarAreaData(
-                        show: true, color: Color.fromARGB(112, 22, 194, 65)),
+                        show: true,
+                        color: const Color.fromARGB(112, 22, 194, 65)),
                   ),
                   LineChartBarData(
                     spots: _data.map((e) {
@@ -128,31 +130,31 @@ class _TestState extends State<Test> {
                     }).toList(),
                     isCurved: true,
                     barWidth: 5,
-                    color: Color.fromARGB(255, 194, 213, 14),
+                    color: const Color.fromARGB(255, 194, 213, 14),
                     isStrokeCapRound: true,
                     dotData: FlDotData(
                       show: true,
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: Color.fromARGB(108, 193, 213, 14),
+                      color: const Color.fromARGB(108, 193, 213, 14),
                     ),
                   ),
                 ])),
           ),
           Text(
             _position.toString(),
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
           Row(
-            children: [
+            children: const [
               Text(
                 'x',
                 style: TextStyle(
                     color: Color(0xff23b6e6), fontWeight: FontWeight.bold),
               ),
               Text(
-                'x',
+                'y',
                 style: TextStyle(
                     color: Color.fromARGB(187, 22, 194, 65),
                     fontWeight: FontWeight.bold),
@@ -168,24 +170,27 @@ class _TestState extends State<Test> {
           TextButton(
               child: Container(
                   color: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Text(
                     state == false ? '시작' : '중지',
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                   )),
               onPressed: () async {
                 List<Data> data;
-                if (state) {
-                  data = await _dataCollect.save();
+
+                if (!state) {
+                  _dataCollect.startRecord();
                   setState(() {
-                    _data = data;
+                    state = !state;
                   });
                 } else {
-                  _dataCollect.accelermeter();
+                  data = await _dataCollect.cancelAndSave();
+                  setState(() {
+                    state = !state;
+                    _data = data;
+                  });
                 }
-                setState(() {
-                  state = !state;
-                });
               }),
         ],
       ))),

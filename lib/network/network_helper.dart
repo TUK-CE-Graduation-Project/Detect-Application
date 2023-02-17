@@ -26,7 +26,7 @@ class DioClient {
     }
   }
 
-  Future<NetWorkResult> post(String url, Map<String, dynamic> data) async {
+  Future<NetWorkResult> post(String url, dynamic data) async {
     try {
       Response response = await _dio.post(url, data: data);
       if (response.statusCode == 200) {
