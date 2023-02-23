@@ -72,7 +72,7 @@ class AccelerometerService {
     String dataString = '$time\n';
     for (var element in _data) {
       dataString +=
-          '${element.position}, ${element.accelerometerEvent}, ${element.time}\n';
+          '${element.position?.latitude}, ${element.position?.longitude}, ${element.accelerometerEvent?.x}, ${element.accelerometerEvent?.y}, ${element.accelerometerEvent?.z} ${element.time}\n';
     }
     File file = await createFile();
     file.writeAsString(dataString);
