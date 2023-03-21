@@ -3,6 +3,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:test2/service/video_playback_service.dart';
 
 class CameraApp extends StatefulWidget {
   const CameraApp({Key? key}) : super(key: key);
@@ -72,7 +73,7 @@ class _CameraAppState extends State<CameraApp> {
       });
       final route = MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => VideoPage(fillPath: file.path)
+        builder: (_) => VideoPlayback(filePath: file.path)
       );
       Navigator.push(context, route);
     } else{
