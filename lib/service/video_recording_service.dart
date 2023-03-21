@@ -75,6 +75,9 @@ class _CameraAppState extends State<CameraApp> {
         fullscreenDialog: true,
         builder: (_) => VideoPlayback(filePath: file.path)
       );
+      // 동영상 녹화 후 어떻게 할까?
+      //  BuildContext를 비동기 작업과 함께 사용 x -> await 이후 사용할 BuildContext를 가지고 있으면 오류가 어디서 발생했는지 찾기 힘듬
+      if (!mounted) return; // 이 코드를 context 사용한 부분 앞에 붙임 -> 위젯이 마운트 되지 않으면 async를 썼을 때 그 안에 아무런 값도 들어있지 않을 수 있기 때문
       Navigator.push(context, route);
     } else{
       await _cameraController.prepareForVideoRecording();
