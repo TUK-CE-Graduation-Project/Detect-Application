@@ -92,12 +92,15 @@ class _CameraAppState extends State<CameraApp> {
     } else{
       await _cameraController.prepareForVideoRecording();
       await _cameraController.startVideoRecording();  //  비디오 녹화 시작
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
         setState(() {
           _seconds++; //  타이머 시작
         });
       });
-      setState(() {
+
+      // imu 센서 감지도 추가하기
+
+     setState(() {
         _cameraRecoding = true;
       });
     }
