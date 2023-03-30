@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:test2/service/position_stream.dart';
+import 'package:test2/service/video_playback_service.dart';
+import 'package:test2/service/video_recording_service.dart';
 
 import '../network/network_helper.dart';
 import 'location_service.dart';
@@ -34,8 +37,12 @@ class AccelerometerService {
 
   Stopwatch? _stopwatch;
   Timer? _timer;
+  List<int> _eventTimeList = [];
 
   void startRecord() async {
+
+    CameraApp();
+
     _data = [];
     _stopwatch = Stopwatch();
     _stopwatch!.start();
@@ -48,7 +55,11 @@ class AccelerometerService {
     _streamSubscriptions
         .add(accelerometerEvents.listen((AccelerometerEvent event) {
       _event = event;
+      // 일정치 이상이면 Timer 저장
+      _eventTimeList.add(_stopwatch!.elapsed.inSeconds);
     }));
+
+
 
     _timer = Timer.periodic(Duration(milliseconds: 200), (timer) {
       _data.add(Data(

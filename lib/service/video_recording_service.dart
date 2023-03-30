@@ -21,7 +21,7 @@ class _CameraAppState extends State<CameraApp> {
   bool _cameraRecoding = false;
   late CameraController _cameraController;
 
-  Timer? _timer;  //  타이머
+  Stopwatch? _stopwatch;  //  스탑워치
   int _seconds = 0;  //
 
 
@@ -30,13 +30,14 @@ class _CameraAppState extends State<CameraApp> {
 
     super.initState();
     _initCamera();
+
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     _cameraController.dispose();
-    _timer?.cancel();
+    _stopwatch?.stop();
     super.dispose();
   }
 
@@ -77,10 +78,11 @@ class _CameraAppState extends State<CameraApp> {
   _recordVideo() async{
     if(_cameraRecoding){
       final file = await _cameraController.stopVideoRecording();  //  비디오 녹화 중지
-      _timer!.cancel();
+      //_stopwatch!.stop();
       setState(() {
         _cameraRecoding = false;
       });
+      //
       final route = MaterialPageRoute(
         fullscreenDialog: true,
         builder: (_) => VideoPlayback(filePath: file.path)
@@ -92,7 +94,7 @@ class _CameraAppState extends State<CameraApp> {
     } else{
       await _cameraController.prepareForVideoRecording();
       await _cameraController.startVideoRecording();  //  비디오 녹화 시작
-      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      //_timer = Timer.periodic(Duration(seconds: 1), (timer) {
         setState(() {
           _seconds++; //  타이머 시작
         });
