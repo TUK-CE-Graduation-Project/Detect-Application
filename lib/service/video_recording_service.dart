@@ -21,10 +21,6 @@ class _CameraAppState extends State<CameraApp> {
   bool _cameraRecoding = false;
   late CameraController _cameraController;
 
-  Stopwatch? _stopwatch;  //  스탑워치
-  int _seconds = 0;  //
-
-
   @override
   void initState() {
 
@@ -37,7 +33,6 @@ class _CameraAppState extends State<CameraApp> {
   void dispose() {
     // TODO: implement dispose
     _cameraController.dispose();
-    _stopwatch?.stop();
     super.dispose();
   }
 
@@ -78,7 +73,6 @@ class _CameraAppState extends State<CameraApp> {
   _recordVideo() async{
     if(_cameraRecoding){
       final file = await _cameraController.stopVideoRecording();  //  비디오 녹화 중지
-      //_stopwatch!.stop();
       setState(() {
         _cameraRecoding = false;
       });
@@ -94,7 +88,6 @@ class _CameraAppState extends State<CameraApp> {
     } else{
       await _cameraController.prepareForVideoRecording();
       await _cameraController.startVideoRecording();  //  비디오 녹화 시작
-      _stopwatch = Stopwatch();
 
       // imu 센서 감지도 추가하기
 
