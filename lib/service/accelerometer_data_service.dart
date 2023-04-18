@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
@@ -41,26 +42,29 @@ class AccelerometerService {
 
   void startRecord() async {
 
-    CameraApp();
-
     _data = [];
     _stopwatch = Stopwatch();
     _stopwatch!.start();
     _position = await MyLocation().getMyCurrentLocation();
 
+    // 위치 데이터 받는 곳
     _positionStream.controller.stream.listen((event) {
       _position = event;
     });
 
+    // 가속도 데이터 받는 곳
     _streamSubscriptions
         .add(accelerometerEvents.listen((AccelerometerEvent event) {
       _event = event;
       // 일정치 이상이면 Timer 저장
-      _eventTimeList.add(_stopwatch!.elapsed.inSeconds);
+      // ex: event.x > 5
+      if (true){
+        _eventTimeList.add(_stopwatch!.elapsed.inSeconds);
+        log("stopwatch: ${_stopwatch!.elapsed.inSeconds}");
+      }
     }));
 
-
-
+    // 0.002초 마다 한 번씩 데이터 저장
     _timer = Timer.periodic(Duration(milliseconds: 200), (timer) {
       _data.add(Data(
           accelerometerEvent: _event,
