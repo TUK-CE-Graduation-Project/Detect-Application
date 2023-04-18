@@ -8,13 +8,7 @@ class MyLocation {
     return _instance;
   }
 
-  initLocation() async {
-    await checkPermission();
-  }
-
-  MyLocation._internal() {
-    initLocation();
-  }
+  MyLocation._internal();
 
   Future<void> checkPermission() async {
     bool serviceEnabled;
@@ -42,6 +36,7 @@ class MyLocation {
   }
 
   Future<Position?> getMyCurrentLocation() async {
+    await checkPermission();
     try {
       position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
