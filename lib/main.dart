@@ -7,6 +7,7 @@ import 'package:test2/service/accelerometer_data_service.dart';
 import 'package:test2/service/location_service.dart';
 import 'package:test2/service/position_stream.dart';
 import 'package:test2/service/video_playback_service.dart';
+import 'package:test2/service/video_recording_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +43,7 @@ class Test extends StatefulWidget {
 
 class _TestState extends State<Test> {
   final AccelerometerService _dataCollect = AccelerometerService();
+  final CameraApp _cameraApp = CameraApp();
   bool state = false;
   List<Data> _data = [];
   Position? _position;
@@ -197,6 +199,19 @@ class _TestState extends State<Test> {
                   });
                 }
               }),
+          TextButton(
+            child: Container(
+                color: Colors.white,
+                padding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: const Text("카메라")
+            ),
+              onPressed: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CameraApp())
+                );
+          })
         ],
       ))),
     );
