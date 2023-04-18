@@ -28,6 +28,7 @@ class _VideoPlaybackState extends State<VideoPlayback> {
     await _videoPlayerController.play();
   }
 
+
   Widget videoPreview(){
     return Scaffold(
       appBar: AppBar(

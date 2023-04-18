@@ -23,7 +23,6 @@ class _CameraAppState extends State<CameraApp> {
 
   @override
   void initState() {
-
     super.initState();
     _initCamera();
 
@@ -45,18 +44,21 @@ class _CameraAppState extends State<CameraApp> {
     final front = cameras.firstWhere((element) => element.lensDirection == CameraLensDirection.front);
     // 해상도 조절
 
+    _cameraController = CameraController(front, ResolutionPreset.high);
+
     await _cameraController.initialize();
+
     setState(() {
       _cameraLoading = false;
     });
   }
   
-  Widget cameraPreview(){
+  Widget cameraPreview(CameraController cameraController){
     return Center(
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          CameraPreview(_cameraController),
+          CameraPreview(cameraController),
           Padding(
             padding: const EdgeInsets.all(25),
             child: FloatingActionButton(
@@ -114,7 +116,7 @@ class _CameraAppState extends State<CameraApp> {
         )
       );
     } else{
-      return cameraPreview();
+      return cameraPreview(_cameraController);
     }
   }
 }
