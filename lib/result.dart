@@ -17,7 +17,7 @@ enum Result {
 }
 
 class CallBackResult {
-  List<Data> data;
+  AccelerometerData data;
   String filePath;
 
   CallBackResult({required this.data, required this.filePath});

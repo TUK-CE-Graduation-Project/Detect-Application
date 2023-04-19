@@ -25,7 +25,9 @@ class _CameraAppState extends State<CameraApp> {
   bool _cameraLoading = true;
   bool _cameraRecoding = false;
   bool _dataCollectState = false;
-  CallBackResult result = CallBackResult(data: [], filePath: "");
+  CallBackResult result = CallBackResult(
+      data: AccelerometerData(dataList: [], eventTimeList: []),
+      filePath: "");
 
 
   late CameraController _cameraController;

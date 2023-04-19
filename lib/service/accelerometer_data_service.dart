@@ -18,14 +18,15 @@ class Data {
   AccelerometerEvent? accelerometerEvent;
   DateTime time;
 
+
   Data({this.accelerometerEvent, required this.position, required this.time});
 }
 
-class Data2 {
-  List<Data> data;
-  int time;
+class AccelerometerData{
+  List<Data> dataList;
+  List<int> eventTimeList;
 
-  Data2({required this.data, required this.time});
+  AccelerometerData({ required this.dataList, required this.eventTimeList});
 }
 
 class AccelerometerService {
@@ -35,6 +36,7 @@ class AccelerometerService {
 
   List<Data> _data = [];
   AccelerometerEvent? _event;
+  late AccelerometerData result;
 
   Stopwatch? _stopwatch;
   Timer? _timer;
@@ -57,8 +59,7 @@ class AccelerometerService {
         .add(accelerometerEvents.listen((AccelerometerEvent event) {
       _event = event;
       // 일정치 이상이면 Timer 저장
-      // ex: event.x > 5
-      if (true){
+      if (event.z > 20){
         _eventTimeList.add(_stopwatch!.elapsed.inSeconds);
         log("stopwatch: ${_stopwatch!.elapsed.inSeconds}");
       }
@@ -69,7 +70,8 @@ class AccelerometerService {
       _data.add(Data(
           accelerometerEvent: _event,
           position: _position,
-          time: DateTime.now()));
+          time: DateTime.now(),
+      ));
     });
   }
 
@@ -80,7 +82,7 @@ class AccelerometerService {
     return file;
   }
 
-  Future<List<Data>> cancelAndSave() async {
+  Future<AccelerometerData> cancelAndSave() async {
     int time = _stopwatch!.elapsed.inSeconds;
     cancel();
 
@@ -95,7 +97,7 @@ class AccelerometerService {
     FormData formData = FormData.fromMap({'file': file});
     DioClient().post('url', formData);
 
-    return _data;
+    return AccelerometerData(dataList: _data, eventTimeList: _eventTimeList);
   }
 
   void cancel() {
