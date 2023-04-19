@@ -41,7 +41,7 @@ class _CameraAppState extends State<CameraApp> {
     // 사용할 카메라 목록 받기
     final cameras = await availableCameras();
     // 전면 카메라 사용
-    final front = cameras.firstWhere((element) => element.lensDirection == CameraLensDirection.front);
+    final front = cameras.firstWhere((element) => element.lensDirection == CameraLensDirection.back);
     // 해상도 조절
 
     _cameraController = CameraController(front, ResolutionPreset.high);
