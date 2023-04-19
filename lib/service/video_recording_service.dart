@@ -5,20 +5,29 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'package:test2/result.dart';
 import 'package:test2/service/video_playback_service.dart';
 
 import 'accelerometer_data_service.dart';
 
 class CameraApp extends StatefulWidget {
-  const CameraApp({Key? key}) : super(key: key);
+  const CameraApp({Key? key, required this.result}) : super(key: key);
+
+  final CallBackResult result;
 
   @override
   State<CameraApp> createState() => _CameraAppState();
 }
 
 class _CameraAppState extends State<CameraApp> {
+  final AccelerometerService _dataCollect = AccelerometerService();
   bool _cameraLoading = true;
   bool _cameraRecoding = false;
+  bool _dataCollectState = false;
+  CallBackResult result = CallBackResult(data: [], filePath: "");
+
+
   late CameraController _cameraController;
 
   @override
@@ -31,8 +40,10 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void dispose() {
     // TODO: implement dispose
-    _cameraController.dispose();
     super.dispose();
+
+    _cameraController.dispose();
+    _dataCollect.cancel();
   }
 
   // Cameracontroller 초기화
@@ -64,7 +75,9 @@ class _CameraAppState extends State<CameraApp> {
             child: FloatingActionButton(
               backgroundColor: Colors.red,
               child: Icon(_cameraRecoding? Icons.stop: Icons.circle),
-              onPressed: () => _recordVideo(),
+              onPressed: () {
+                _recordVideo();
+              },
             )
           )
         ],
@@ -72,39 +85,64 @@ class _CameraAppState extends State<CameraApp> {
     );
   }
 
+  _finishDialog() async{
+    return AlertDialog(
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: const <Widget>[
+            Text('촬영을 종료하시겠습니까?')
+          ],
+        )
+      ),
+      actions: <Widget>[
+        FloatingActionButton(
+          child: const Text('종료 및 이동'),
+          onPressed: () async {
+
+
+            Navigator.pop(context, true);
+          }
+        ),
+        FloatingActionButton(
+            child: const Text('취소'),
+            onPressed: (){
+              Navigator.pop(context);
+            }
+        ),
+      ],
+    );
+  }
+
   _recordVideo() async{
     if(_cameraRecoding){
       final file = await _cameraController.stopVideoRecording();  //  비디오 녹화 중지
+      var data = await _dataCollect.cancelAndSave();
+
       setState(() {
         _cameraRecoding = false;
+        _dataCollectState = !_dataCollectState;
       });
-      //
-      final route = MaterialPageRoute(
+
+      /*final route = MaterialPageRoute(
         fullscreenDialog: true,
         builder: (_) => VideoPlayback(filePath: file.path)
-      );
+      );*/
       // 동영상 녹화 후 어떻게 할까?
       //  BuildContext를 비동기 작업과 함께 사용 x -> wait 이후 사용할 BuildContext를 가지고 있으면 오류가 어디서 발생했는지 찾기 힘듬
       if (!mounted) return; // 이 코드를 context 사용한 부분 앞에 붙임 -> 위젯이 마운트 되지 않으면 async를 썼을 때 그 안에 아무런 값도 들어있지 않을 수 있기 때문
-      Navigator.push(context, route);
+      Navigator.pop(context, CallBackResult(data: data, filePath: file.path));
+      _finishDialog();
     } else{
       await _cameraController.prepareForVideoRecording();
       await _cameraController.startVideoRecording();  //  비디오 녹화 시작
 
-      // imu 센서 감지도 추가하기
-
-     setState(() {
+      _dataCollect.startRecord();
+      setState(() {
+        _dataCollectState = !_dataCollectState;
         _cameraRecoding = true;
       });
     }
   }
-
-  changeSeconds(int seconds){ //  맞나?
-    var hour = (seconds/(60*60))%24;
-    var minute = (seconds/60)%60;
-    var second = (seconds)%60;
-  }
-
 
   @override
   Widget build(BuildContext context) {

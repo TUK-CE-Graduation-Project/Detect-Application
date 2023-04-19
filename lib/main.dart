@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:test2/result.dart';
 import 'package:test2/service/accelerometer_data_service.dart';
 import 'package:test2/service/location_service.dart';
 import 'package:test2/service/position_stream.dart';
@@ -42,8 +43,6 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> {
-  final AccelerometerService _dataCollect = AccelerometerService();
-  final CameraApp _cameraApp = CameraApp();
   bool state = false;
   List<Data> _data = [];
   Position? _position;
@@ -60,7 +59,6 @@ class _TestState extends State<Test> {
   @override
   void dispose() {
     super.dispose();
-    _dataCollect.cancel();
   }
 
   @override
@@ -184,7 +182,7 @@ class _TestState extends State<Test> {
                     style: const TextStyle(color: Colors.black),
                   )),
               onPressed: () async {
-                List<Data> data;
+/*                List<Data> data;
 
                 if (!state) {
                   _dataCollect.startRecord();
@@ -197,7 +195,7 @@ class _TestState extends State<Test> {
                     state = !state;
                     _data = data;
                   });
-                }
+                }*/
               }),
           TextButton(
             child: Container(
@@ -207,10 +205,15 @@ class _TestState extends State<Test> {
                 child: const Text("카메라")
             ),
               onPressed: () async {
-                Navigator.push(
+              CallBackResult result = CallBackResult(data: [], filePath: "");
+
+                result = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CameraApp())
+                  MaterialPageRoute(builder: (context) => CameraApp(result: result))
                 );
+                setState(() {
+                  _data = result.data;
+                });
           })
         ],
       ))),
