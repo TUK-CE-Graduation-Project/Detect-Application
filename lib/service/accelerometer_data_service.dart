@@ -61,7 +61,7 @@ class AccelerometerService {
       // 일정치 이상이면 Timer 저장
       if (event.z > 20){
         _eventTimeList.add(_stopwatch!.elapsed.inSeconds);
-        log("stopwatch: ${_stopwatch!.elapsed.inSeconds}");
+        log("stopwatch: ${_stopwatch!.elapsed}");
       }
     }));
 
@@ -97,6 +97,7 @@ class AccelerometerService {
     FormData formData = FormData.fromMap({'file': file});
     DioClient().post('url', formData);
 
+    _eventTimeList = _eventTimeList.toSet().toList();
     return AccelerometerData(dataList: _data, eventTimeList: _eventTimeList);
   }
 
