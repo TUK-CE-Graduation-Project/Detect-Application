@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -49,7 +48,8 @@ class _TestState extends State<Test> {
   bool state = false;
   List<Data> _data = [];
   Position? _position;
-  List<File> _editFileList = [];
+  List<String> cutVideoPathList = [];
+  String cutVideoPath = ""; //  마지막으로 잘린 비디오 확
   CallBackResult result = CallBackResult(
       data: AccelerometerData(dataList: [], eventTimeList: []), filePath: "");
   final PositionStream _positionStream = PositionStream();
@@ -225,32 +225,34 @@ class _TestState extends State<Test> {
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: const Text("영상 자르기")),
               onPressed: () async {
-                List<File> editFileList = [];
-                var timerList = result.data.eventTimeList.toSet().toList();
+                String videoPath = "";
+                // 타이머 중복 제거 및 int로 변환
+                var timerList = result.data.eventTimeList;
+                int count = 0;
+                print(timerList);
 
-                timerList.forEach((element) async{
-                  editFileList.add(await VideoEditor()
-                      .cutVideoAndUploadToServer(element, result.filePath,
-                      '${result.filePath}_${element.inSeconds}'));
-                });
-                print("일단 영상 자르기 성공?");
+                for (var element in timerList){
+                  videoPath = await VideoEditor().cutVideoAndUploadToServer(element, result.filePath);
 
-                setState(() {
-                  _editFileList = editFileList;
-                });
-
-                final route = MaterialPageRoute(
-                    fullscreenDialog: true,
-                    builder: (_) =>
-                        VideoPlayback(filePath: _editFileList[0].path));
-
+                  print("완료된 비디오 $videoPath");
+                  cutVideoPathList.add(videoPath);
+                }
+                cutVideoPath = videoPath;
+              }),
+          Text('이벤트 발생 시간은 : ${result.data.eventTimeList.toString()}',
+              style: const TextStyle(color: Colors.white)),
+          TextButton(
+              child: Container(
+                  color: Colors.white,
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: const Text("영상 재생(테스트용)")),
+              onPressed: () async {
                 Navigator.push(
                     context,
-                    route
-                );
-              }),
-          Text('이벤트 발생 시간은 : ${result.data.eventTimeList.map((e) => e.inSeconds).toSet().toList().toString()}',
-              style: const TextStyle(color: Colors.white)),
+                    MaterialPageRoute(
+                        builder: (context) => VideoPlayback(filePath: cutVideoPath)));
+              })
         ],
       ))),
     );
