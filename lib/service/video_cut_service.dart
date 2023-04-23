@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
-import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 
@@ -29,9 +29,36 @@ class VideoEditor {
     final flutterFFmpeg = FlutterFFmpeg();
     flutterFFmpeg.executeWithArguments(arguments);
 
+    uploadVideo(outputFile, 'url');
+
     return outputFile;
   }
 }
+
+Future<void> uploadVideo(String filePath, String url) async {
+  final file = File(filePath);
+  final videoStream = http.ByteStream(file.openRead());
+  final videoLength = await file.length();
+
+  final request = http.MultipartRequest('POST', Uri.parse(url));
+  final multipartFile = http.MultipartFile(
+    'video',
+    videoStream,
+    videoLength,
+    filename: file.path.split('/').last,
+  );
+
+  request.files.add(multipartFile);
+
+  final response = await request.send();
+
+  if (response.statusCode == 200) {
+    print('Video uploaded successfully!');
+  } else {
+    print('Error uploading video. Status code: ${response.statusCode}');
+  }
+}
+
 
 
 String formatSeconds(int seconds) {

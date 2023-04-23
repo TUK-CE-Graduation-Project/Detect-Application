@@ -46,6 +46,7 @@ dependencies:
   video_player: ^2.6.0
   flutter_ffmpeg: ^0.4.1
   location: ^4.4.0
+  http: ^0.13.5
 
 
 
