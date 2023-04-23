@@ -24,7 +24,7 @@ class Data {
 
 class AccelerometerData{
   List<Data> dataList;
-  List<int> eventTimeList;
+  List<Duration> eventTimeList;
 
   AccelerometerData({ required this.dataList, required this.eventTimeList});
 }
@@ -40,7 +40,7 @@ class AccelerometerService {
 
   Stopwatch? _stopwatch;
   Timer? _timer;
-  List<int> _eventTimeList = [];
+  List<Duration> _eventTimeList = [];
 
   void startRecord() async {
 
@@ -60,8 +60,8 @@ class AccelerometerService {
       _event = event;
       // 일정치 이상이면 Timer 저장
       if (event.z > 20){
-        _eventTimeList.add(_stopwatch!.elapsed.inSeconds);
-        log("stopwatch: ${_stopwatch!.elapsed}");
+        _eventTimeList.add(_stopwatch!.elapsed);
+        log("stopwatch: ${_stopwatch!.elapsed.inSeconds}");
       }
     }));
 
