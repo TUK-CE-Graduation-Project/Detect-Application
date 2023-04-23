@@ -1,49 +1,42 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
 
 class VideoEditor {
-  Future<File> cutVideoAndUploadToServer(
-      Duration duration, String inputPath, String outputPath) async {
+  Future<String> cutVideoAndUploadToServer(int timer, String originalFilePath) async {
 
-    final ffmpeg = FlutterFFmpeg();
-
-
-    final startTime = duration.toString().split('.').first.padLeft(8, "0");
-    final endTime =
-    (duration + Duration(seconds: 10)).toString().split('.').first.padLeft(8, "0");
+    final directory = await getApplicationDocumentsDirectory();
+    final outputFile = '${directory.path}/${DateTime.now()}_$timer.mp4';
 
     final arguments = [
-      '-i', inputPath,
-      '-ss', startTime,
-      '-t', endTime,
-      '-c:v', 'libx264',
-      '-preset', 'ultrafast',
-      '-c:a', 'copy',
-      '-f', 'mp4',
-      outputPath
+      '-i',
+      originalFilePath,
+      '-ss',
+      (formatSeconds(timer)), //
+      '-t',
+      (formatSeconds(timer+3)), //  3후
+      '-async',
+      '1',
+      outputFile
     ];
 
-    final completer = Completer<File>();
 
-    try {
-      final rc = await ffmpeg.executeWithArguments(arguments);
-      if (rc == 0) {
-        final file = File(outputPath);
-        completer.complete(file);
-      } else {
-        print("else에서 에러");
-        throw Exception('FFmpeg exited with error code $rc');
-      }
-    } catch (e) {
-      print("아예 이 함수가 문제인 듯?");
-      completer.completeError(e);
-    }
+    final flutterFFmpeg = FlutterFFmpeg();
+    flutterFFmpeg.executeWithArguments(arguments);
 
-
-    final result = await completer.future;
-    return result;
+    return outputFile;
   }
+}
+
+
+String formatSeconds(int seconds) {
+  final hours = seconds ~/ 3600;
+  final minutes = (seconds % 3600) ~/ 60;
+  final remainingSeconds = seconds % 60;
+  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
 }
