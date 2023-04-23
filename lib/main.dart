@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,6 +9,7 @@ import 'package:test2/result.dart';
 import 'package:test2/service/accelerometer_data_service.dart';
 import 'package:test2/service/location_service.dart';
 import 'package:test2/service/position_stream.dart';
+import 'package:test2/service/video_cut_service.dart';
 import 'package:test2/service/video_playback_service.dart';
 import 'package:test2/service/video_recording_service.dart';
 
@@ -46,6 +49,7 @@ class _TestState extends State<Test> {
   bool state = false;
   List<Data> _data = [];
   Position? _position;
+  List<File> _editFileList = [];
   CallBackResult result = CallBackResult(
       data: AccelerometerData(dataList: [], eventTimeList: []), filePath: "");
   final PositionStream _positionStream = PositionStream();
@@ -75,121 +79,115 @@ class _TestState extends State<Test> {
       body: SafeArea(
           child: Center(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AspectRatio(
-                    aspectRatio: 3 / 2,
-                    child: LineChart(LineChartData(
-                        gridData: FlGridData(
-                          show: true,
-                          getDrawingVerticalLine: (value) {
-                            return FlLine(
-                                color: const Color.fromARGB(144, 255, 255, 255),
-                                strokeWidth: 1);
-                          },
-                          getDrawingHorizontalLine: (value) {
-                            return FlLine(
-                                color: const Color.fromARGB(144, 255, 255, 255),
-                                strokeWidth: 1);
-                          },
-                        ),
-                        borderData: FlBorderData(
-                            show: true,
-                            border:
-                            Border.all(
-                                color: const Color(0xff02d39a), width: 1)),
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: _data.map((e) {
-                              indexX++;
-                              return FlSpot(
-                                  indexX, e.accelerometerEvent?.x ?? 0);
-                            }).toList(),
-                            isCurved: true,
-                            barWidth: 5,
-                            color: const Color(0xff23b6e6),
-                            isStrokeCapRound: true,
-                            dotData: FlDotData(
-                              show: true,
-                            ),
-                            belowBarData: BarAreaData(
-                                show: true,
-                                color: const Color.fromARGB(122, 27, 206, 113)),
-                          ),
-                          LineChartBarData(
-                            spots: _data.map((e) {
-                              indexY++;
-                              return FlSpot(
-                                  indexY, e.accelerometerEvent?.y ?? 0);
-                            }).toList(),
-                            isCurved: true,
-                            barWidth: 5,
-                            color: const Color.fromARGB(187, 22, 194, 65),
-                            isStrokeCapRound: true,
-                            dotData: FlDotData(
-                              show: true,
-                            ),
-                            belowBarData: BarAreaData(
-                                show: true,
-                                color: const Color.fromARGB(112, 22, 194, 65)),
-                          ),
-                          LineChartBarData(
-                            spots: _data.map((e) {
-                              indexZ++;
-                              return FlSpot(
-                                  indexZ, e.accelerometerEvent?.z ?? 0);
-                            }).toList(),
-                            isCurved: true,
-                            barWidth: 5,
-                            color: const Color.fromARGB(255, 194, 213, 14),
-                            isStrokeCapRound: true,
-                            dotData: FlDotData(
-                              show: true,
-                            ),
-                            belowBarData: BarAreaData(
-                              show: true,
-                              color: const Color.fromARGB(108, 193, 213, 14),
-                            ),
-                          ),
-                        ])),
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AspectRatio(
+            aspectRatio: 3 / 2,
+            child: LineChart(LineChartData(
+                gridData: FlGridData(
+                  show: true,
+                  getDrawingVerticalLine: (value) {
+                    return FlLine(
+                        color: const Color.fromARGB(144, 255, 255, 255),
+                        strokeWidth: 1);
+                  },
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                        color: const Color.fromARGB(144, 255, 255, 255),
+                        strokeWidth: 1);
+                  },
+                ),
+                borderData: FlBorderData(
+                    show: true,
+                    border:
+                        Border.all(color: const Color(0xff02d39a), width: 1)),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: _data.map((e) {
+                      indexX++;
+                      return FlSpot(indexX, e.accelerometerEvent?.x ?? 0);
+                    }).toList(),
+                    isCurved: true,
+                    barWidth: 5,
+                    color: const Color(0xff23b6e6),
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                    ),
+                    belowBarData: BarAreaData(
+                        show: true,
+                        color: const Color.fromARGB(122, 27, 206, 113)),
                   ),
-                  Text(
-                    _position.toString(),
-                    style: const TextStyle(color: Colors.white),
+                  LineChartBarData(
+                    spots: _data.map((e) {
+                      indexY++;
+                      return FlSpot(indexY, e.accelerometerEvent?.y ?? 0);
+                    }).toList(),
+                    isCurved: true,
+                    barWidth: 5,
+                    color: const Color.fromARGB(187, 22, 194, 65),
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                    ),
+                    belowBarData: BarAreaData(
+                        show: true,
+                        color: const Color.fromARGB(112, 22, 194, 65)),
                   ),
-                  Row(
-                    children: const [
-                      Text(
-                        'x',
-                        style: TextStyle(
-                            color: Color(0xff23b6e6),
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'y',
-                        style: TextStyle(
-                            color: Color.fromARGB(187, 22, 194, 65),
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'z',
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 194, 213, 14),
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  LineChartBarData(
+                    spots: _data.map((e) {
+                      indexZ++;
+                      return FlSpot(indexZ, e.accelerometerEvent?.z ?? 0);
+                    }).toList(),
+                    isCurved: true,
+                    barWidth: 5,
+                    color: const Color.fromARGB(255, 194, 213, 14),
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: const Color.fromARGB(108, 193, 213, 14),
+                    ),
                   ),
-                  TextButton(
-                      child: Container(
-                          color: Colors.white,
-                          padding:
-                          const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child: Text(
-                            state == false ? '시작' : '중지',
-                            style: const TextStyle(color: Colors.black),
-                          )),
-                      onPressed: () async {
+                ])),
+          ),
+          Text(
+            _position.toString(),
+            style: const TextStyle(color: Colors.white),
+          ),
+          Row(
+            children: const [
+              Text(
+                'x',
+                style: TextStyle(
+                    color: Color(0xff23b6e6), fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'y',
+                style: TextStyle(
+                    color: Color.fromARGB(187, 22, 194, 65),
+                    fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'z',
+                style: TextStyle(
+                    color: Color.fromARGB(255, 194, 213, 14),
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          TextButton(
+              child: Container(
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Text(
+                    state == false ? '시작' : '중지',
+                    style: const TextStyle(color: Colors.black),
+                  )),
+              onPressed: () async {
 /*                List<Data> data;
 
                 if (!state) {
@@ -204,33 +202,57 @@ class _TestState extends State<Test> {
                     _data = data;
                   });
                 }*/
-                      }),
-                  TextButton(
-                      child: Container(
-                          color: Colors.white,
-                          padding:
-                          const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child: const Text("카메라")),
-                      onPressed: () async {
-                        result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    CameraApp(result: result)));
-                        setState(() {
-                          _data = result.data.dataList;
-                        });
-                      }),
-                  Text(
-                    '이벤트 발생 시간은 : ${result.data.eventTimeList.toString()}',
-                    style: const TextStyle(
-                      color: Colors.white
-                    )
-                  ),
+              }),
+          TextButton(
+              child: Container(
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: const Text("카메라")),
+              onPressed: () async {
+                result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CameraApp(result: result)));
+                setState(() {
+                  _data = result.data.dataList;
+                });
+              }),
+          TextButton(
+              child: Container(
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: const Text("영상 자르기")),
+              onPressed: () async {
+                List<File> editFileList = [];
+                var timerList = result.data.eventTimeList.toSet().toList();
 
-                ],
-              ))),
+                timerList.forEach((element) async{
+                  editFileList.add(await VideoEditor()
+                      .cutVideoAndUploadToServer(element, result.filePath,
+                      '${result.filePath}_${element.inSeconds}'));
+                });
+                print("일단 영상 자르기 성공?");
+
+                setState(() {
+                  _editFileList = editFileList;
+                });
+
+                final route = MaterialPageRoute(
+                    fullscreenDialog: true,
+                    builder: (_) =>
+                        VideoPlayback(filePath: _editFileList[0].path));
+
+                Navigator.push(
+                    context,
+                    route
+                );
+              }),
+          Text('이벤트 발생 시간은 : ${result.data.eventTimeList.map((e) => e.inSeconds).toSet().toList().toString()}',
+              style: const TextStyle(color: Colors.white)),
+        ],
+      ))),
     );
   }
 }
