@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,7 +25,7 @@ class Data {
 
 class AccelerometerData{
   List<Data> dataList;
-  List<Duration> eventTimeList;
+  List<int> eventTimeList;
 
   AccelerometerData({ required this.dataList, required this.eventTimeList});
 }
@@ -40,7 +41,7 @@ class AccelerometerService {
 
   Stopwatch? _stopwatch;
   Timer? _timer;
-  List<Duration> _eventTimeList = [];
+  List<int> _eventTimeList = [];
 
   void startRecord() async {
 
@@ -60,7 +61,7 @@ class AccelerometerService {
       _event = event;
       // 일정치 이상이면 Timer 저장
       if (event.z > 20){
-        _eventTimeList.add(_stopwatch!.elapsed);
+        _eventTimeList.add(_stopwatch!.elapsed.inSeconds);
         log("stopwatch: ${_stopwatch!.elapsed.inSeconds}");
       }
     }));
