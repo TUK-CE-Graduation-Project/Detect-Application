@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 
 class VideoEditor {
-  Future<String> cutVideoAndUploadToServer(int timer, String originalFilePath) async {
+  Future<String> cutVideo(int timer, String originalFilePath) async {
 
     final directory = await getApplicationDocumentsDirectory();
     final outputFile = '${directory.path}/${DateTime.now()}_$timer.mp4';
@@ -29,13 +29,13 @@ class VideoEditor {
     final flutterFFmpeg = FlutterFFmpeg();
     flutterFFmpeg.executeWithArguments(arguments);
 
-    uploadVideo(outputFile, 'url');
+    uploadVideoToServer(outputFile, 'url');
 
     return outputFile;
   }
 }
 
-Future<void> uploadVideo(String filePath, String url) async {
+Future<void> uploadVideoToServer(String filePath, String url) async {
   final file = File(filePath);
   final videoStream = http.ByteStream(file.openRead());
   final videoLength = await file.length();

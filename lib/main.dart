@@ -232,7 +232,7 @@ class _TestState extends State<Test> {
                 print(timerList);
 
                 for (var element in timerList){
-                  videoPath = await VideoEditor().cutVideoAndUploadToServer(element, result.filePath);
+                  videoPath = await VideoEditor().cutVideo(element, result.filePath);
 
                   print("완료된 비디오 $videoPath");
                   cutVideoPathList.add(videoPath);
