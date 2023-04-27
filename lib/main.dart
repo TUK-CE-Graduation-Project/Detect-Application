@@ -63,17 +63,23 @@ class _TestState extends State<Test> {
   final directory = getApplicationDocumentsDirectory();
 
   @override
+  void initState() {
+    _positionStream.controller.stream.listen((event) {
+      setState(() {
+        _position = event;
+      });
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _positionStream.controller.stream.listen((event) {
-      setState(() {
-        _position = event;
-      });
-    });
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -155,11 +161,11 @@ class _TestState extends State<Test> {
                 ])),
           ),
           Text(
-            "Latitude: ${_position!.latitude.toString() ?? ""}",
+            "Latitude: ${_position?.latitude.toString() ?? ""}",
             style: const TextStyle(color: Colors.black),
           ),
           Text(
-            "Longitude: ${_position!.longitude.toString()??""}",
+            "Longitude: ${_position?.longitude.toString()??""}",
             style: const TextStyle(color: Colors.black),
           ),
           Row(
