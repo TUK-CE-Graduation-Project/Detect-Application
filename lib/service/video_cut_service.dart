@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -39,8 +40,8 @@ Future<void> uploadVideoToServer(String filePath, String url) async {
   final file = File(filePath);
   final videoStream = http.ByteStream(file.openRead());
   final videoLength = await file.length();
-
-  final request = http.MultipartRequest('POST', Uri.parse(url));
+  final String? _baseUrl = dotenv.env['BASE_URL'];
+  final request = http.MultipartRequest('POST', Uri.parse('${_baseUrl}/api/pothole/register'));
   final multipartFile = http.MultipartFile(
     'video',
     videoStream,
