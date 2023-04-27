@@ -47,6 +47,7 @@ dependencies:
   flutter_ffmpeg: ^0.4.1
   location: ^4.4.0
   http: ^0.13.5
+  flutter_dotenv: ^5.0.2
 
 
 
