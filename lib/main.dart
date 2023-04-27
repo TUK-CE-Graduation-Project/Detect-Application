@@ -155,11 +155,11 @@ class _TestState extends State<Test> {
                 ])),
           ),
           Text(
-            "Latitude: ${_position!.latitude.toString()}",
+            "Latitude: ${_position!.latitude.toString() ?? ""}",
             style: const TextStyle(color: Colors.black),
           ),
           Text(
-            "Longitude: ${_position!.longitude.toString()}",
+            "Longitude: ${_position!.longitude.toString()??""}",
             style: const TextStyle(color: Colors.black),
           ),
           Row(
