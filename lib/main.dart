@@ -75,10 +75,11 @@ class _TestState extends State<Test> {
       });
     });
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: SafeArea(
           child: Center(
               child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           AspectRatio(
@@ -154,11 +155,16 @@ class _TestState extends State<Test> {
                 ])),
           ),
           Text(
-            _position.toString(),
-            style: const TextStyle(color: Colors.white),
+            "Latitude: ${_position!.latitude.toString()}",
+            style: const TextStyle(color: Colors.black),
+          ),
+          Text(
+            "Longitude: ${_position!.longitude.toString()}",
+            style: const TextStyle(color: Colors.black),
           ),
           Row(
-            children: const [
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
               Text(
                 'x',
                 style: TextStyle(
@@ -178,17 +184,17 @@ class _TestState extends State<Test> {
               ),
             ],
           ),
-          TextButton(
+          /*TextButton(
               child: Container(
-                  color: Colors.white,
+                  color: Colors.black,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Text(
                     state == false ? '시작' : '중지',
-                    style: const TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.white),
                   )),
               onPressed: () async {
-/*                List<Data> data;
+                List<Data> data;
 
                 if (!state) {
                   _dataCollect.startRecord();
@@ -201,14 +207,15 @@ class _TestState extends State<Test> {
                     state = !state;
                     _data = data;
                   });
-                }*/
-              }),
+                }
+              }),*/
           TextButton(
               child: Container(
-                  color: Colors.white,
+                  color: Colors.black,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: const Text("카메라")),
+                  child:
+                      const Text("영상 촬영", style: TextStyle(color: Colors.white))),
               onPressed: () async {
                 result = await Navigator.push(
                     context,
@@ -220,10 +227,11 @@ class _TestState extends State<Test> {
               }),
           TextButton(
               child: Container(
-                  color: Colors.white,
+                  color: Colors.black,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: const Text("영상 자르기")),
+                  child: const Text("영상 자르기",
+                      style: TextStyle(color: Colors.white))),
               onPressed: () async {
                 String videoPath = "";
                 // 타이머 중복 제거 및 int로 변환
@@ -231,8 +239,9 @@ class _TestState extends State<Test> {
                 int count = 0;
                 print(timerList);
 
-                for (var element in timerList){
-                  videoPath = await VideoEditor().cutVideo(element, result.filePath);
+                for (var element in timerList) {
+                  videoPath =
+                      await VideoEditor().cutVideo(element, result.filePath);
 
                   print("완료된 비디오 $videoPath");
                   cutVideoPathList.add(videoPath);
@@ -240,18 +249,20 @@ class _TestState extends State<Test> {
                 cutVideoPath = videoPath;
               }),
           Text('이벤트 발생 시간은 : ${result.data.eventTimeList.toString()}',
-              style: const TextStyle(color: Colors.white)),
+              style: const TextStyle(color: Colors.black)),
           TextButton(
               child: Container(
-                  color: Colors.white,
+                  color: Colors.black,
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: const Text("영상 재생(테스트용)")),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: const Text("영상 재생(테스트용)",
+                      style: TextStyle(color: Colors.white))),
               onPressed: () async {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => VideoPlayback(filePath: cutVideoPath)));
+                        builder: (context) =>
+                            VideoPlayback(filePath: cutVideoPath)));
               })
         ],
       ))),
