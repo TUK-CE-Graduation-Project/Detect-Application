@@ -88,78 +88,6 @@ class _TestState extends State<Test> {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          AspectRatio(
-            aspectRatio: 3 / 2,
-            child: LineChart(LineChartData(
-                gridData: FlGridData(
-                  show: true,
-                  getDrawingVerticalLine: (value) {
-                    return FlLine(
-                        color: const Color.fromARGB(144, 255, 255, 255),
-                        strokeWidth: 1);
-                  },
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                        color: const Color.fromARGB(144, 255, 255, 255),
-                        strokeWidth: 1);
-                  },
-                ),
-                borderData: FlBorderData(
-                    show: true,
-                    border:
-                        Border.all(color: const Color(0xff02d39a), width: 1)),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: _data.map((e) {
-                      indexX++;
-                      return FlSpot(indexX, e.accelerometerEvent?.x ?? 0);
-                    }).toList(),
-                    isCurved: true,
-                    barWidth: 5,
-                    color: const Color(0xff23b6e6),
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: true,
-                    ),
-                    belowBarData: BarAreaData(
-                        show: true,
-                        color: const Color.fromARGB(122, 27, 206, 113)),
-                  ),
-                  LineChartBarData(
-                    spots: _data.map((e) {
-                      indexY++;
-                      return FlSpot(indexY, e.accelerometerEvent?.y ?? 0);
-                    }).toList(),
-                    isCurved: true,
-                    barWidth: 5,
-                    color: const Color.fromARGB(187, 22, 194, 65),
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: true,
-                    ),
-                    belowBarData: BarAreaData(
-                        show: true,
-                        color: const Color.fromARGB(112, 22, 194, 65)),
-                  ),
-                  LineChartBarData(
-                    spots: _data.map((e) {
-                      indexZ++;
-                      return FlSpot(indexZ, e.accelerometerEvent?.z ?? 0);
-                    }).toList(),
-                    isCurved: true,
-                    barWidth: 5,
-                    color: const Color.fromARGB(255, 194, 213, 14),
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: true,
-                    ),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      color: const Color.fromARGB(108, 193, 213, 14),
-                    ),
-                  ),
-                ])),
-          ),
           Text(
             "Latitude: ${_position?.latitude.toString() ?? ""}",
             style: const TextStyle(color: Colors.black),
@@ -168,53 +96,6 @@ class _TestState extends State<Test> {
             "Longitude: ${_position?.longitude.toString()??""}",
             style: const TextStyle(color: Colors.black),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'x',
-                style: TextStyle(
-                    color: Color(0xff23b6e6), fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'y',
-                style: TextStyle(
-                    color: Color.fromARGB(187, 22, 194, 65),
-                    fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'z',
-                style: TextStyle(
-                    color: Color.fromARGB(255, 194, 213, 14),
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          /*TextButton(
-              child: Container(
-                  color: Colors.black,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Text(
-                    state == false ? '시작' : '중지',
-                    style: const TextStyle(color: Colors.white),
-                  )),
-              onPressed: () async {
-                List<Data> data;
-
-                if (!state) {
-                  _dataCollect.startRecord();
-                  setState(() {
-                    state = !state;
-                  });
-                } else {
-                  data = await _dataCollect.cancelAndSave();
-                  setState(() {
-                    state = !state;
-                    _data = data;
-                  });
-                }
-              }),*/
           TextButton(
               child: Container(
                   color: Colors.black,
@@ -236,7 +117,7 @@ class _TestState extends State<Test> {
                   color: Colors.black,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: const Text("영상 자르기",
+                  child: const Text("카메라 시작",
                       style: TextStyle(color: Colors.white))),
               onPressed: () async {
                 String videoPath = "";
